@@ -31,9 +31,20 @@ def reverseList(head):
     head.next = None
     return new_head
 
+def removeNthFromEnd(head, n):
+    dummy = ListNode(0, head)
+    slow = fast = dummy
+    for _ in range(n):
+        fast = fast.next
+    while fast.next:
+        fast = fast.next
+        slow = slow.next
+    slow.next = slow.next.next
+    return dummy.next
 
 arr = [1, 2, 3, 4, 5]
+n = 2
 
 head = create_linked_list(arr)
 display_linked_list(head)
-display_linked_list(reverseList(head))
+display_linked_list(removeNthFromEnd(head,n))

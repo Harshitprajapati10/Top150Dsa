@@ -160,6 +160,71 @@ def get_total_null_links_internal_nodes(root):
     return 0
 
 # 226 invert binary tree
+def invertTree(root):
+    if root is None:
+        return None
+    left = invertTree(root.left)
+    right = invertTree(root.right)
+    root.left = right
+    root.right = left
+    return root
+
+
+#104 -> max depth of the binary treee
+def maxDepth(root):
+    if root is None: return 0
+    return max(maxDepth(root.left), maxDepth(root.right)) + 1
+
+
+# 543 -> diameter of the binary tree
+class getDiameter:
+    def __init__(self):
+        self.diameter = 0
+    def height(self,root):
+        if root in None: return 0
+        leftHeight = self.height(root.left)
+        rightHeight = self.height(root.right)
+        self.diameter = max(self.diameter, leftHeight + rightHeight)
+        return max(leftHeight, rightHeight) + 1
+    def diameter_of_binary_tree(self,root):
+        return self.diameter
+
+
+#110 balanced binary tree  
+def isBalancedTree(node):
+    def height(root):
+        if root is None:
+            return True
+        leftHeight = height(root.left)
+        if leftHeight == -1:
+            return -1
+        rightHeight = height(root.right)
+        if rightHeight == -1:
+            return -1
+        if abs(leftHeight-rightHeight)>1:
+            return -1
+        return (1 + max(leftHeight,rightHeight))
+    return height(node) != -1
+
+
+# 100 same Tree
+# waf boolean to check whether two trees are same
+def same_tree(p,q):
+    if not p and not q:
+        return True
+    if not p or not q or p.val != q.val:
+        return False
+    return (same_tree(p.left,q.left) and
+                same_tree(p.right,q.right))
+
+#572 subtree of a tree
+def isSubtree(root, subRoot):
+        if not subRoot: return True
+        if not root: return False
+        if same_tree(root,subRoot):
+            return True
+        return (isSubtree(root.left, subRoot) or
+                isSubtree(root.right,subRoot))
 
 
 if __name__ == "__main__":
@@ -202,5 +267,9 @@ if __name__ == "__main__":
     print("\n\ntotal nodes: ", get_total_nodes(root))
     print("\n\n Total null links in internal node : ", get_total_null_links_internal_nodes(root))
 
+    print("\n\nInverted Binary tree is: ", display_tree(invertTree(root)))
+    print("\n\n Depth is : ", maxDepth(root))
 
-
+    o = getDiameter()
+    dia = o.diameter_of_binary_tree(root)
+    print(dia)

@@ -138,12 +138,125 @@ def tabulation_knapsack_with_binary(weights, values, W):
     return "".join(binary), dp[n][W]
 
 
+# ------------------------
+# Fractional Knapstack Problem
+"""
+Fractional Knapsack Problem — Problem Statement
 
-print(greedy_knapstack(weights=weights, values=values, W = W)) #35
-recursive_knapstack(weights, values, W)# 37
-print(knapsack_with_path(weights, values,W))
-print(tabulation_knapstack(weights, values, W))
-print(tabulation_knapsack_with_binary(weights, values, W))
+You are given n items, where each item has:a weight value 
+You are also given a knapsack with a maximum weight capacity 
+𝑊
+Your task is to maximize the total value placed in the knapsack by allowing items to be broken into fractions.
+
+You may:
+
+take an item fully
+
+take a fraction of an item
+
+take at most the available weight of any item
+
+The total weight of chosen items (including fractions) must not exceed the knapsack capacity.
+"""
+
+# example
+wei = [2,1,3,2]
+val = [12,10,20,15]
+W_total = 5
+
+# soln -> take 2 completely, take 4 completely,take 2/3 of item 3  
+# 10 + 15 + 13.33 = 38.33
+
+# GREEDY is the optimal approach
+# greedy works optimal -> because items are divisible 
+def fractional_knapsack(weights, values, W):
+    n = len(weights)
+
+    # create items as (value/weight ratio, value, weight)
+    items = []
+    for i in range(n):
+        items.append((values[i] / weights[i], values[i], weights[i]))
+
+    # sort items by ratio (high → low)
+    items.sort(reverse=True)
+
+    total_value = 0.0
+    capacity = W
+
+    for ratio, value, weight in items:
+        if capacity == 0:
+            break
+
+        if weight <= capacity:
+            # take whole item
+            total_value += value
+            capacity -= weight
+        else:
+            # take fraction of item
+            total_value += ratio * capacity
+            capacity = 0
+
+    return total_value
+
+
+#----------------------------------------------
+# Activity selection problem
+"""
+you have given n activities A1,A2.... An
+    Ai has start time Si and finish time Fi
+    Ai takes place during [Si,Fi]
+    Ai and Aj are compatible if [si,fi) and [sj,fj] dont overlap
+    return max no. of mutually compatible activities
+    A1: [1 ─── 4)
+    A2:   [3 ─── 5)
+    A3: [0 ─────── 6)
+    A4:       [5 ─── 7)
+    A5:           [8 ─ 9)
+    A6:       [5 ─────── 9)
+
+    Choose:
+
+    A1 → [1,4)
+
+    A4 → [5,7)
+
+    A5 → [8,9)
+    , total number of activities selected = 3
+
+"""
+# use greedy one
+def activity_selection(start, finish):
+    # combine activities as (start, finish)
+    activities = list(zip(start, finish))
+    # sort by finish time
+    activities.sort(key=lambda x: x[1])
+    
+    selected = []
+    last_finish = 0
+    
+    for s, f in activities:
+        if s >= last_finish:
+            selected.append((s, f))
+            last_finish = f
+    
+    return selected, len(selected)
 
 
 
+
+if __name__ == "__main__":
+    print(greedy_knapstack(weights=weights, values=values, W = W)) #35
+    recursive_knapstack(weights, values, W)# 37
+    print(knapsack_with_path(weights, values,W))
+    print(tabulation_knapstack(weights, values, W))
+    print(tabulation_knapsack_with_binary(weights, values, W))
+    print(fractional_knapsack(wei,val,W_total)) #38.33
+
+
+    # Example
+    start = [1, 3, 0, 5, 8, 5]
+    finish = [4, 5, 6, 7, 9, 9]
+
+    selected_activities, count = activity_selection(start, finish)
+    print("Selected activities:", selected_activities)
+    print("Maximum number of activities:", count)

@@ -1,4 +1,6 @@
 # create tree
+
+import queue
 from collections import deque
 
 class TreeNode:
@@ -6,6 +8,34 @@ class TreeNode:
         self.val = val
         self.left = left
         self.right = right
+
+from collections import deque
+
+def buildTree(arr):
+    if not arr or arr[0] is None:
+        return None
+
+    root = TreeNode(arr[0])
+    q = deque([root])
+    i = 1
+
+    while q and i < len(arr):
+        node = q.popleft()
+
+        # left child
+        if i < len(arr) and arr[i] is not None:
+            node.left = TreeNode(arr[i])
+            q.append(node.left)
+        i += 1
+
+        # right child
+        if i < len(arr) and arr[i] is not None:
+            node.right = TreeNode(arr[i])
+            q.append(node.right)
+        i += 1
+
+    return root
+
 
 def display_tree(root, level=0):
     if root is None:
@@ -226,6 +256,112 @@ def isSubtree(root, subRoot):
         return (isSubtree(root.left, subRoot) or
                 isSubtree(root.right,subRoot))
 
+#102 binary tree level order traversal
+def levelOrder(root):
+    if not root:
+        return []
+    q = queue.Queue()
+    q.put(root)
+    res = []
+    while not q.empty():
+        lvlSize = q.qsize()
+        currLvl = []
+        for i in range(lvlSize):
+            curr = q.get()
+            currLvl.append(curr.val )
+            if curr.left: q.put(curr.left)
+            if curr.right: q.put(curr.right)
+        res.append(currLvl)
+    return res
+
+
+#199-> binary tree right side view
+
+def right_side_view(root):
+    if not root:
+        return []
+    q = queue.Queue()
+    q.put(root)
+    res = []
+    while not q.empty():
+        lvlSize = q.qsize()
+        currLvl = []
+        for i in range(lvlSize):
+            curr = q.get()
+            currLvl.append(curr.val )
+            if curr.left: q.put(curr.left)
+            if curr.right: q.put(curr.right)
+        res.append(currLvl[-1])
+    return res
+
+#1448 count good nodes in binary tree
+
+def goodNodes(root):
+    if root is None:
+        return 0
+    def dfs(root, max_so_far):
+        good_nodes = 0
+        if not root:
+            return 0
+        if root.val >= max_so_far:
+            good_nodes = 1
+        new_max = max(max_so_far,root.val)
+        return good_nodes + dfs(root.left, new_max) + dfs(root.right, new_max)
+    return dfs(root, root.val)
+
+#94 inorder traversal array return
+class In_order_array:
+    def __init__(self):
+        self.arr = []
+    def inorderTraversal(self, root):
+        def dfs(root):
+            if not root:
+                return
+            dfs(root.left)
+            self.arr.append(root.val)
+            dfs(root.right)
+        dfs(root)
+        return self.arr
+    
+#95,96 create bsts
+
+def totalBST(n):
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    dp[1] = 1
+
+    for nodes in range(2, n + 1):
+        for root in range(1, nodes + 1):
+            dp[nodes] += dp[root - 1] * dp[nodes - root]
+    return dp[n]
+
+def generateAllBST(n):
+    if n == 0:
+        return []
+
+    def generate(start, end):
+        trees = []
+
+        if start > end:
+            return [None]
+
+        for root_val in range(start, end + 1):
+            left_trees = generate(start, root_val - 1)
+            right_trees = generate(root_val + 1, end)
+
+            for l in left_trees:
+                for r in right_trees:
+                    root = TreeNode(root_val)
+                    root.left = l
+                    root.right = r
+                    trees.append(root)
+
+        return trees
+
+    return generate(1, n)
+
+
+
 
 if __name__ == "__main__":
     root = TreeNode(1)
@@ -237,39 +373,52 @@ if __name__ == "__main__":
 
     root.right.right = TreeNode(6)
 
-    """
-        1
-       / \
-      2   3
-     / \   \
-    4   5   6
+    
+    #     1
+    #    / \
+    #   2   3
+    #  / \   \
+    # 4   5   6
 
-    """
+    
 
-    display_tree(root)
+    # display_tree(root)
     print("BFS is: ", lvlorderTraversal(root))
-    print("\nPreOrder is: ")
-    preOrder(root)
-    print("\nInOrder is: ")
-    InOrder(root)
-    print("\nPostOrder is: ")
-    postOrder(root)
-    print("\nPreorder iterative is:")
-    print(dfs_preorder_iterative(root))
-    print("\INorder iterative is:")
-    print(dfs_inorder_iterative(root))
-    print("\INorder iterative is:")
-    print(dfs_inorder_iterative(root))
-    print("\PostOrder iterative is:")
-    print(dfs_postorder_iterative(root))
-    print("\n\ntotal leaf nodes: ", get_total_leaf_node(root))
-    print("\n\ntotal internal nodes: ", get_total_internal_nodes(root))
-    print("\n\ntotal nodes: ", get_total_nodes(root))
-    print("\n\n Total null links in internal node : ", get_total_null_links_internal_nodes(root))
+    # print("\nPreOrder is: ")
+    # preOrder(root)
+    # print("\nInOrder is: ")
+    # InOrder(root)
+    # print("\nPostOrder is: ")
+    # postOrder(root)
 
-    print("\n\nInverted Binary tree is: ", display_tree(invertTree(root)))
-    print("\n\n Depth is : ", maxDepth(root))
+    # print("\nPreorder iterative is:")
+    # print(dfs_preorder_iterative(root))
+    # print("\INorder iterative is:")
+    # print(dfs_inorder_iterative(root))
+    # print("\INorder iterative is:")
+    # print(dfs_inorder_iterative(root))
+    # print("\PostOrder iterative is:")
+    # print(dfs_postorder_iterative(root))
+    # print("\n\ntotal leaf nodes: ", get_total_leaf_node(root))
+    # print("\n\ntotal internal nodes: ", get_total_internal_nodes(root))
+    # print("\n\ntotal nodes: ", get_total_nodes(root))
+    # print("\n\n Total null links in internal node : ", get_total_null_links_internal_nodes(root))
 
-    o = getDiameter()
-    dia = o.diameter_of_binary_tree(root)
-    print(dia)
+    # print("\n\nInverted Binary tree is: ", display_tree(invertTree(root)))
+    # print("\n\n Depth is : ", maxDepth(root))
+
+    # o = getDiameter()
+    # dia = o.diameter_of_binary_tree(root)
+    # print(dia)
+
+
+    # print(levelOrder(root))
+    print(right_side_view(root))
+
+    arr = [3, 1, 4, 3, None, 1, 5]
+
+    root = buildTree(arr)
+
+    print("No of good nodes is : ", goodNodes(root))
+
+    print("Bsts formed by 3 nodes are : ", totalBST(3))
